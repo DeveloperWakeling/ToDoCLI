@@ -31,6 +31,15 @@ impl ToDoList {
     fn complete(&mut self, index: usize){
         self.list[index].completed = 'x';
     }
+    
+    fn uncomplete(&mut self, index: usize){
+        self.list[index].completed = ' ';
+    }
+
+    fn remove_task(&mut self, index: usize){
+        self.list.remove(index);
+    }
+
     fn print(&self) {
         for (index, item) in self.list.iter().enumerate() {
             println!("{}. [{}] - {}", index, item.completed, item.name);
@@ -41,7 +50,9 @@ impl ToDoList {
 enum Command {
     Get,
     Add(String),
-    Complete(usize)
+    Complete(usize),
+    Uncomplete(usize),
+    Remove(usize)
 }
 
 fn main() {
@@ -49,7 +60,9 @@ fn main() {
     let cmd = match arguments[1].as_str() {
         "get" => Command::Get,
         "add" => Command::Add(arguments[2].clone()),
-        "complete" => Command::Complete(arguments[2].parse().unwrap()),//Unwrap just gets the Ok
+        "complete" => Command::Complete(arguments[2].parse().expect("Error parsing")),//Unwrap just gets the Ok
+        "undo" => Command::Uncomplete(arguments[2].parse().expect("Error parsing")),//Unwrap just gets the Ok
+        "remove" => Command::Remove(arguments[2].parse().expect("Error parsing")),//Unwrap just gets the Ok
         _ => panic!("You must provide a proper command")//_ is basically the defualt
     };
     let mut todo_list = ToDoList::new();
@@ -65,6 +78,14 @@ fn main() {
         },
         Command::Complete(index) => {
             todo_list.complete(index);
+            todo_list.print();
+        },
+        Command::Uncomplete(index) => {
+            todo_list.uncomplete(index);
+            todo_list.print();
+        },
+        Command::Remove(index) => {
+            todo_list.remove_task(index);
             todo_list.print();
         }
     }
